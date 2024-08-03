@@ -11,6 +11,49 @@ let {
  const speed = require("performance-now");
  const Config = require("../config");
  const cheerio = require("cheerio");
+ const M = "It Sends version";
+ const S = "Shows about the system";
+ 
+smd(
+  {
+    pattern: "version",
+    desc: M,
+    react: "✅",
+    category: "misc",
+    filename: __filename,
+  },
+  async (message) => {
+    const channelMessage = `RCD-MD Version 🧬\n\nInstalled version 🔗:\n1.0.1v - Beta Edition (By NICO)\n\nCheck official github : https://github.com/SLTechnicalTips/`;
+
+    const contextInfo = {
+      forwardingScore: 999,
+      isForwarded: true,
+    };
+
+    await message.send(channelMessage, { contextInfo });
+  }
+);
+
+smd(
+  {
+    pattern: "sysd",
+    desc: S,
+    react: "💻",
+    category: "misc",
+    filename: __filename,
+  },
+  async (message) => {
+    const sysM = `Operating System: Ubuntu 20.04 LTS\nCPU: Intel Xeon E5-2670 v2 @ 2.50GHz\nRAM: 64 GB DDR4\nStorage (ROM):\nTotal: 1 TB SSD\nUsed: 300 GB\nAvailable: 700 GB\nNetwork:\nIP Address: 1.1.1.101\nBandwidth Usage: 984 Mbps\nLoad Average (1, 5, 15 min): 0.15, 0.10, 0.08\nProcesses Running: 215`;
+  
+    const contextInfo = {
+      forwardingScore: 999,
+      isForwarded: true,
+    };
+
+    await message.send(sysM, { contextInfo });
+  }
+);
+
  smd(
   {
     pattern: "channel",
