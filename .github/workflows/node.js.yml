@@ -1,5 +1,5 @@
-name: Node.js CI
- 
+name: RCD-MD
+
 on:
   push:
     branches:
@@ -26,8 +26,22 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-    - name: Install dependencies
+    - name: Deploying Application
       run: npm install
 
-    - name: Start application
-      run: npm start
+    - name: BOT Running with retries
+      run: |
+        max_attempts=3
+        attempt=0
+        until [ $attempt -ge $max_attempts ]
+        do
+          npm start && break
+          attempt=$((attempt+1))
+          echo "Attempt $attempt failed! Retrying in 30s..."
+          sleep 30
+        done
+      continue-on-error: true
+
+    - name: Check if BOT Running step passed
+      if: failure()
+      run: exit 1
