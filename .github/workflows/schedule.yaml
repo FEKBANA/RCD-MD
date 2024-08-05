@@ -1,0 +1,45 @@
+name: Scheduled Bot Re-run
+
+on:
+  workflow_dispatch:  # Allows manual triggering of the workflow
+  schedule:
+    - cron: '*/5 * * * *'  # Runs every 5 minutes
+
+jobs:
+  re-run-failed-jobs:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout the repository
+      uses: actions/checkout@v3
+
+    - name: Get Bot details
+      id: get-repo
+      run: |
+        REPO=${{ github.repository }}
+        echo "::set-output name=repo::$REPO"
+
+    - name: Check for Re-runs
+      id: get-failed
+      run: |
+        REPO=${{ steps.get-repo.outputs.repo }}
+        failed_runs=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          "https://api.github.com/repos/$REPO/actions/runs?status=completed&conclusion=failure" \
+          | jq -r '.workflow_runs[] | .id')
+
+        echo "Failed runs: $failed_runs"
+        echo "::set-output name=failed_runs::$failed_runs"
+
+    - name: Re-run Bot
+      run: |
+        failed_runs="${{ steps.get-failed.outputs.failed_runs }}"
+
+        if [ -z "$failed_runs" ]; then
+          echo "No failed runs to re-run."
+        else
+          for run_id in $failed_runs; do
+            echo "Re-running workflow run ID: $run_id"
+            curl -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Accept: application/vnd.github.v3+json" \
+              "https://api.github.com/repos/${{ github.repository }}/actions/runs/$run_id/rerun"
+          done
