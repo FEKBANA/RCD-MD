@@ -19,7 +19,7 @@ jobs:
         REPO=${{ github.repository }}
         echo "::set-output name=repo::$REPO"
 
-    - name: Check for Re-runs
+    - name: Check for Re-run
       id: get-failed
       run: |
         REPO=${{ steps.get-repo.outputs.repo }}
